@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8" />
+  <title>Boids</title>
+  <script src="./boids.js"></script>
+  <style type="text/css">
+    body {
+      margin: 0;
+      background: rgb(255, 218, 96);
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+
+    canvas {
+      background: #282c34;
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      margin: 0 20px;
+    }
+
+    .horizontal {
+      display: flex;
+      flex-direction: row;
+    }
+
+    input {
+      padding: 0.5em;
+      width: 200px;
+      background: rgb(255, 218, 96);
+    }
+
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    button {
+      background-color: #007BFF;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 4px;
+      padding: 0.5em 1.5em;
+      margin-left: 20px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    button:focus {
+      outline: none;
+      box-shadow: 0 0 0 4px rgba(0,123,255,0.25);
+    }
+
+    button:active {
+      background-color: #003f7f;
+    }
+
+    input {
+      width: 100%;
+      max-width: 300px;
+      padding: 0.75em;
+      font-size: 1rem;
+      font-family: sans-serif;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    input:focus {
+      border-color: #007BFF;
+      box-shadow: 0 0 4px rgba(0, 123, 255, 0.5);
+      outline: none;
+    }
+
+    #anv {
+      margin-left: 20px;
+
+    }
+  </style>
+</head>
+
+<body>
+  <canvas id="boids" width="150" height="150"></canvas>
+
+  <div class="horizontal">
+
+    <form id="numberForm">
+      <div class="stack">
+        <label for="number">Number</label>
+        <input type="number" id="number" name="number" min="0" max="4000" value="100" />
+      </div>
+    </form>
+
+    <form id="speedForm">
+      <div class="stack">
+        <label for="speed">Speed</label>
+        <input type="number" id="speed" name="speed" min="0" max="100" value="3" />
+      </div>
+    </form>
+
+    <form id="rangeForm">
+      <div class="stack">
+        <label for="range">Range</label>
+        <input type="number" id="range" name="range" min="0" max="500" value="30"/>
+      </div>
+    </form>
+
+    <form id="noiseForm">
+      <div class="stack">
+        <label for="noise">Noise</label>
+        <input type="number" id="noise" name="noise" min="0" max="120" value="20"/>
+      </div>
+    </form>
+
+    <button id="toggle">
+      Toggle Trails
+    </button>
+    <button id="reset">
+      Reset
+    </button>
+
+    <p id="anv">
+      Average normalized velocity <i style="font-family: 'Times New Roman', Times, serif;">v<sub>a</sub></i>:&nbsp<p id="calcValue">3</p>
+    </p>
+  </div>
+
+
+</body>
+
+</html>
