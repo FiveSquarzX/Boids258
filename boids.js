@@ -8,8 +8,8 @@ let rangeSquared = visualRange * visualRange;
 
 var boids = [];
 
-let speed = 3;
-let noise = 20;
+let speed = 5;
+let noise = 80;
 
 function initBoids() {
   for (var i = 0; i < numBoids; i += 1) {
