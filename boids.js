@@ -29,7 +29,11 @@ function initBoids() {
 }
 
 function distanceSquared(boid1, boid2) {
-  return (boid1.x - boid2.x) * (boid1.x - boid2.x) + (boid1.y - boid2.y) * (boid1.y - boid2.y)
+  dx = boid1.x - boid2.x
+  dx -= width * Math.round(dx/width)
+  dy = boid1.y - boid2.y
+  dy -= height * Math.round(dy/height)
+  return dx * dx + dy * dy
 }
 
 function sizeCanvas() {
