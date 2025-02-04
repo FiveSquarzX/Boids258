@@ -30,9 +30,9 @@ function initBoids() {
 
 function distanceSquared(boid1, boid2) {
   dx = boid1.x - boid2.x
-  dx -= width * Math.round(dx/width)
+  dx -= width * ((dx/width + 0.5) << 0)
   dy = boid1.y - boid2.y
-  dy -= height * Math.round(dy/height)
+  dy -= height * ((dy/height + 0.5) << 0)
   return dx * dx + dy * dy
 }
 
