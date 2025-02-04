@@ -28,14 +28,6 @@ function initBoids() {
   }
 }
 
-function distanceSquared(boid1, boid2) {
-  dx = boid1.x - boid2.x
-  dx -= width * ((dx/width + 0.5) << 0)
-  dy = boid1.y - boid2.y
-  dy -= height * ((dy/height + 0.5) << 0)
-  return dx * dx + dy * dy
-}
-
 function sizeCanvas() {
   const canvas = document.getElementById("boids");
   width = window.innerWidth;
@@ -68,7 +60,11 @@ function matchDirection(boid) {
   let numNeighbors = 0;
 
   for (let otherBoid of boids) {
-    if (distanceSquared(boid, otherBoid) < rangeSquared) {
+    let dx = boid.x - otherBoid.x 
+    let dy = boid.y - otherBoid.y
+    dx -= width * (~~(dx/width))
+    dy -= height * (~~(dy/height))
+    if (dx * dx + dy * dy < rangeSquared) {
       avgDX += otherBoid.dx;
       avgDY += otherBoid.dy;
       numNeighbors += 1;
