@@ -9,7 +9,10 @@ let rangeSquared = visualRange * visualRange;
 var boids = [];
 
 let speed = 5;
-let noise = 80;
+let noise = 140;
+
+const gridSize = 180;
+let grid = [];
 
 function initBoids() {
   for (var i = 0; i < numBoids; i += 1) {
@@ -27,6 +30,7 @@ function initBoids() {
     };
   }
 }
+
 
 function sizeCanvas() {
   const canvas = document.getElementById("boids");
@@ -54,39 +58,65 @@ function mod(n, m) {
   return ((n % m) + m) % m;
 }
 
-function matchDirection(boid) {
-  let avgDX = 0;
-  let avgDY = 0;
-  let numNeighbors = 0;
+function getCellIndex(x, y) {
+  const i = Math.floor((x / width) * gridSize);
+  const j = Math.floor((y / height) * gridSize);
+  return (i % gridSize) + (j % gridSize) * gridSize;
+}
 
-  for (let otherBoid of boids) {
-    let dx = boid.x - otherBoid.x 
-    let dy = boid.y - otherBoid.y
-    dx -= width * (~~(dx/width))
-    dy -= height * (~~(dy/height))
+function updateGrid() {
+  for (let i = 0; i < grid.length; i++) {
+    grid[i].length = 0;
+  }
+  for (let boid of boids) {
+    let cellIndex = getCellIndex(boid.x, boid.y);
+    grid[cellIndex].push(boid);
+  }
+}
+
+function getNeighbors(boid) {
+  let neighbors = [];
+  const i = Math.floor((boid.x / width) * gridSize);
+  const j = Math.floor((boid.y / height) * gridSize);
+
+  const wChunks = Math.ceil(visualRange * gridSize / width)
+  const lChunks = Math.ceil(visualRange * gridSize / height)
+
+  for (let di = -wChunks; di <= wChunks; di++) {
+    for (let dj = -lChunks; dj <= lChunks; dj++) {
+      const ni = (i + di + gridSize) % gridSize;
+      const nj = (j + dj + gridSize) % gridSize;
+      const cellIndex = ni + nj * gridSize;
+      if (grid[cellIndex]) {
+        neighbors = neighbors.concat(grid[cellIndex]);
+      }
+    }
+  }
+  return neighbors;
+}
+
+function matchDirection(boid) {
+  let avgDX = 0, avgDY = 0, numNeighbors = 0;
+  const neighbors = getNeighbors(boid);
+
+  for (let other of neighbors) {
+    let dx = boid.x - other.x;
+    let dy = boid.y - other.y;
+    dx -= width * Math.round(dx / width);
+    dy -= height * Math.round(dy / height);
     if (dx * dx + dy * dy < rangeSquared) {
-      avgDX += otherBoid.dx;
-      avgDY += otherBoid.dy;
-      numNeighbors += 1;
+      avgDX += other.dx;
+      avgDY += other.dy;
+      numNeighbors++;
     }
   }
 
   if (numNeighbors) {
-    avgDX = avgDX / numNeighbors;
-    avgDY = avgDY / numNeighbors;
-
-    let angle = 0;
-    if (avgDX == 0 && avgDY == 0) {
-      angle = Math.random() * Math.PI * 2
-    } else {
-      angle = Math.atan2(avgDY, avgDX);
-    }
-
-    boid.newdx = Math.cos(angle) * speed
-    boid.newdy = Math.sin(angle) * speed
-
-    //boid.dx += (avgDX - boid.dx) * matchingFactor;
-    //boid.dy += (avgDY - boid.dy) * matchingFactor;
+    avgDX /= numNeighbors;
+    avgDY /= numNeighbors;
+    let angle = avgDX || avgDY ? Math.atan2(avgDY, avgDX) : Math.random() * Math.PI * 2;
+    boid.newdx = Math.cos(angle) * speed;
+    boid.newdy = Math.sin(angle) * speed;
   }
 }
 
@@ -106,7 +136,7 @@ function drawBoid(ctx, boid) {
   ctx.translate(boid.x, boid.y);
   ctx.rotate(angle);
   ctx.translate(-boid.x, -boid.y);
-  ctx.fillStyle = "#558cf4";
+  ctx.fillStyle = "#558cf477";
   ctx.beginPath();
   ctx.moveTo(boid.x, boid.y);
   ctx.lineTo(boid.x - 15, boid.y + 5);
@@ -147,13 +177,14 @@ function animationLoop() {
 
   for (let boid of boids) {
     addNoise(boid)
-    keepWithinBounds(boid);
 
     boid.x += boid.dx;
     boid.y += boid.dy;
+    keepWithinBounds(boid);
     boid.history.push([boid.x, boid.y])
     boid.history = boid.history.slice(-50);
   }
+  updateGrid()
 
   // Clear the canvas and redraw all the boids in their current positions
   const ctx = document.getElementById("boids").getContext("2d");
@@ -189,7 +220,7 @@ window.onload = () => {
   // Schedule the main animation loop
   window.requestAnimationFrame(animationLoop);
 
-
+  grid = Array.from({ length: gridSize * gridSize }, () => []);
 
 
   let form = document.getElementById('numberForm');
